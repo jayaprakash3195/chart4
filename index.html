@@ -63,7 +63,6 @@
   <h2>🌟 தென் இந்திய ராசி கட்டம் (108 பாதங்கள்) + <span style="color:#175397;">விம்சோத்தரி தசை</span> 🌟</h2>
   <div class="south-chart" id="rasiChart"></div>
   <script>
-    // pada → info logic
     const PUSHKARA_PADAS = [7,9,12,14,24,26,28,30,43,45,48,50,60,62,64,66,79,81,84,86,96,98,100,102];
     const VARGOTTAMA_PADAS = [1,14,27,28,41,54,55,68,81,82,95,108];
     const KANDANTHARA_PADAS = [1,36,37,72,73,108];
@@ -80,12 +79,11 @@
       { name: "கன்னி", code: "r06", padas: ["உதிரம் - பாதம் 2", "உதிரம் - பாதம் 3", "உதிரம் - பாதம் 4", "ஹஸ்தம் - பாதம் 1", "ஹஸ்தம் - பாதம் 2", "ஹஸ்தம் - பாதம் 3", "ஹஸ்தம் - பாதம் 4", "சித்திரை - பாதம் 1", "சித்திரை - பாதம் 2"] },
       { name: "துலாம்", code: "r07", padas: ["சித்திரை - பாதம் 3", "சித்திரை - பாதம் 4", "சுவாதி - பாதம் 1", "சுவாதி - பாதம் 2", "சுவாதி - பாதம் 3", "சுவாதி - பாதம் 4", "விசாகம் - பாதம் 1", "விசாகம் - பாதம் 2", "விசாகம் - பாதம் 3"] },
       { name: "விருச்சிகம்", code: "r08", padas: ["விசாகம் - பாதம் 4", "அனுஷம் - பாதம் 1", "அனுஷம் - பாதம் 2", "அனுஷம் - பாதம் 3", "அனுஷம் - பாதம் 4", "கேட்டை - பாதம் 1", "கேட்டை - பாதம் 2", "கேட்டை - பாதம் 3", "கேட்டை - பாதம் 4"] },
-      { name: "தனுசு", code: "r09", padas: ["மூலம் - பாதம் 1", "மூலம் - பாதம் 2", "மூலம் - பாதம் 3", "மூலம் - பாதம் 4", "பூராடம் - பாதம் 1", "பூராடம் - பாதம் 2", "பூராடம் - பாதம் 3", "பூராடம் - பாதம் 4", "உத்திராடம் - பாதம் 1"] },
+      { name: "தனுசு", code: "r09", padas: ["மூலம் - பாதம் 1", "மூலம் - பாதம் 2", "மூலம் - பாதம் 3", "மூலம் - பாதம் 4", "பூராடம் - பாதம் 1", "பூராடம் - பாதம் 2", "பூராடம் - பாதம் 3", "பூராடம் - பாதம் 4", "உதிராடம் - பாதம் 1"] },
       { name: "மகரம்", code: "r10", padas: ["உத்திராடம் - பாதம் 2", "உத்திராடம் - பாதம் 3", "உத்திராடம் - பாதம் 4", "திருவோணம் - பாதம் 1", "திருவோணம் - பாதம் 2", "திருவோணம் - பாதம் 3", "திருவோணம் - பாதம் 4", "அவிட்டம் - பாதம் 1", "அவிட்டம் - பாதம் 2"] },
       { name: "கும்பம்", code: "r11", padas: ["அவிட்டம் - பாதம் 3", "அவிட்டம் - பாதம் 4", "சதயம் - பாதம் 1", "சதயம் - பாதம் 2", "சதயம் - பாதம் 3", "சதயம் - பாதம் 4", "பூரட்டாதி - பாதம் 1", "பூரட்டாதி - பாதம் 2", "பூரட்டாதி - பாதம் 3"] },
       { name: "மீனம்", code: "r12", padas: ["பூரட்டாதி - பாதம் 4", "உத்திரட்டாதி - பாதம் 1", "உத்திரட்டாதி - பாதம் 2", "உத்திரட்டாதி - பாதம் 3", "உத்திரட்டாதி - பாதம் 4", "ரேவதி - பாதம் 1", "ரேவதி - பாதம் 2", "ரேவதி - பாதம் 3", "ரேவதி - பாதம் 4"] }
     ];
-    // Copied from your codebase
     const NAKS=[
       {name:'அஸ்வினி',lord:'கேது'},{name:'பரணி',lord:'சுக்ரன்'},{name:'கிருத்திகை',lord:'சூரியன்'},
       {name:'ரோஹிணி',lord:'சந்திரன்'},{name:'மிருகசீரிடம்',lord:'செவ்வாய்'},{name:'திருவாதிரை',lord:'ராகு'},
@@ -98,67 +96,141 @@
       {name:'பூரட்டாதி',lord:'குரு'},{name:'உத்திரட்டாதி',lord:'சனி'},{name:'ரேவதி',lord:'புதன்'}
     ];
 
+    // Rasis with reversed nakshatra pada order AND numbering:
+    const rasisToReverse = ["ரிஷபம்", "துலாம்", "தனுசு", "மகரம்", "கும்பம்", "மீனம்"];
+
     function drawChartGrid() {
       document.getElementById('rasiChart').innerHTML = '';
       let padaDomList = [];
-      let padaCounter = 1;
+      let globalPadaCounter = 1;
+
       rasiData.forEach((rasi, ri) => {
         const box = document.createElement("div");
         box.className = `box ${rasi.code}`;
         box.setAttribute('data-rasi-idx', ri + 1);
+
         const title = document.createElement("div");
         title.className = "rasi-name";
         title.textContent = rasi.name;
+        title.style.cursor = "pointer";
+        title.onclick = () => {
+          showRasiInfo(ri);
+        };
         box.appendChild(title);
-        for(let j=0; j<9; j++) {
-          const line = document.createElement("div");
-          line.className = "line";
-          line.textContent = `${j + 1}. ${rasi.padas[j] ? rasi.padas[j] : "-"}`;
-          line.setAttribute("data-pada-index", padaCounter);
-          box.appendChild(line);
-          padaDomList[padaCounter] = line;
-          padaCounter++;
+
+        if (rasisToReverse.includes(rasi.name)) {
+          // Reverse padas & numbering
+          for (let j = 0; j < 9; j++) {
+            const line = document.createElement("div");
+            line.className = "line";
+
+            // Number prefix reversed: 9 down to 1
+            const displayNumber = 9 - j;
+
+            // Global pada index reversed in this rasi
+            const reversedGlobalPadaIndex = ri * 9 + (9 - j);
+
+            line.textContent = `${displayNumber}. ${rasi.padas[8 - j]}`;
+            line.setAttribute("data-pada-index", reversedGlobalPadaIndex);
+            box.appendChild(line);
+            // Store reference to line for onclick by actual data-pada-index
+            padaDomList[reversedGlobalPadaIndex] = line;
+          }
+          globalPadaCounter += 9;
+        } else {
+          // Normal padas & numbering
+          for (let j = 0; j < 9; j++) {
+            const line = document.createElement("div");
+            line.className = "line";
+
+            line.textContent = `${j + 1}. ${rasi.padas[j]}`;
+            line.setAttribute("data-pada-index", globalPadaCounter);
+            box.appendChild(line);
+            padaDomList[globalPadaCounter] = line;
+            globalPadaCounter++;
+          }
         }
         document.getElementById('rasiChart').appendChild(box);
       });
 
-      // Center info box:
+      // Create center info box with placeholders
       const infobox = document.createElement("div");
       infobox.className = "rasi-info-box";
       infobox.id = "rasiInfoBox";
-      infobox.innerHTML = '<div style="color:#b2b3aa">இந்த பகுதியில் பாத விவரம் தெரியும்.<br>Click a pada for detail here.</div>';
+      infobox.innerHTML = `
+        <div style="color:#b2b3aa">
+          இந்த பகுதியில் பாத விவரம் தெரியும்.<br>Click a pada or Rasi name for details here.<br><br>
+          <div id="additionalGeneralInfo" style="margin-top:10px; font-style: italic; color: #5a7d6e; text-align: left; padding: 0 10px;">
+            hello
+          </div>
+          <div id="naksPadaExtraInfo" style="margin-top:15px; font-style: italic; color: #366c46; text-align: left; padding: 0 10px;">
+            <!-- Add your Nakshatra Pada additional info here later -->
+          </div>
+        </div>
+      `;
       document.getElementById('rasiChart').appendChild(infobox);
 
-      for(let i=1; i<=108; i++) {
-        if(!padaDomList[i]) continue;
+      // Add event listeners on all padas by their true global index now
+      for (let i = 1; i <= 108; i++) {
+        if (!padaDomList[i]) continue;
         padaDomList[i].onclick = null;
-        padaDomList[i].addEventListener("click", function(evt) {
+        padaDomList[i].addEventListener("click", () => {
           showPadaInfo(i);
         });
       }
     }
+
     function showPadaInfo(padaNum) {
-      let rasiIdx = Math.ceil(padaNum/9);
-      let rasiName = rasiData[rasiIdx-1].name;
-      let rasiAthipathi = RASI_ATHIPATHI[rasiIdx-1];
-      let nakIdx = Math.floor((padaNum-1)/4);
+      let rasiIdx = Math.ceil(padaNum / 9);
+      let rasiName = rasiData[rasiIdx - 1].name;
+      let rasiAthipathi = RASI_ATHIPATHI[rasiIdx - 1];
+      let nakIdx = Math.floor((padaNum - 1) / 4);
       let nakName = NAKS[nakIdx].name;
       let nakAthipathi = NAKS[nakIdx].lord;
-      let padaInNak = ((padaNum-1)%4)+1;
+      let padaInNak = ((padaNum - 1) % 4) + 1;
       let badges = [];
-      if(PUSHKARA_PADAS.includes(padaNum)) badges.push('<span class="rasi-info-badge push">புஷ்கர நவாம்ச பாதம்</span>');
-      if(VARGOTTAMA_PADAS.includes(padaNum)) badges.push('<span class="rasi-info-badge vark">வர்கோத்தம பாதம்</span>');
-      if(KANDANTHARA_PADAS.includes(padaNum)) badges.push('<span class="rasi-info-badge kand">கண்டாந்தர நட்சத்திர பாதம்</span>');
+      if (PUSHKARA_PADAS.includes(padaNum)) badges.push('<span class="rasi-info-badge push">புஷ்கர நவாம்ச பாதம்</span>');
+      if (VARGOTTAMA_PADAS.includes(padaNum)) badges.push('<span class="rasi-info-badge vark">வர்கோத்தம பாதம்</span>');
+      if (KANDANTHARA_PADAS.includes(padaNum)) badges.push('<span class="rasi-info-badge kand">கண்டாந்தர நட்சத்திர பாதம்</span>');
+
       let infoHtml = `
         <div class="rasi-info-title">${nakName} - பாதம் ${padaInNak} (${padaNum}/108)</div>
         <div><span class="rasi-info-label">ராசி:</span> ${rasiName} &nbsp; 
             <span class="rasi-info-label">ராசி அதிபதி:</span> ${rasiAthipathi}</div>
         <div><span class="rasi-info-label">நட்சத்திரம்:</span> ${nakName} &nbsp; 
             <span class="rasi-info-label">நட்சத்திர அதிபதி:</span> ${nakAthipathi}</div>
-        ${badges.length>0 ? '<div style="margin-top:7px; margin-bottom:0;">' + badges.join(" ") + "</div>": ""}
+        ${badges.length > 0 ? '<div style="margin-top:7px; margin-bottom:0;">' + badges.join(" ") + "</div>" : ""}
+        <div id="additionalGeneralInfo" style="margin-top:15px; font-style: italic; color: #5a7d6e; text-align: left; padding: 0 10px;">
+          <!-- Add additional Rasi info for this pada here later -->
+        </div>
+        <div id="naksPadaExtraInfo" style="margin-top:15px; font-style: italic; color: #366c46; text-align: left; padding: 0 10px;">
+          <!-- Add additional Nakshatra Pada info here later -->
+        </div>
       `;
       document.getElementById('rasiInfoBox').innerHTML = infoHtml;
     }
+
+    function showRasiInfo(rasiIdx) {
+      const rasi = rasiData[rasiIdx];
+      const rasiName = rasi.name;
+      const rasiAthipathi = RASI_ATHIPATHI[rasiIdx];
+
+      const infoHtml = `
+        <div class="rasi-info-title">${rasiName}</div>
+        <div><span class="rasi-info-label">ராசி அதிபதி:</span> ${rasiAthipathi}</div>
+        
+         
+   
+        <div id="additionalGeneralInfo" style="margin-top:15px; font-style: italic; color: #5a7d6e; text-align: left; padding: 0 10px;">
+          <!-- Add detailed Rasi information here later -->
+        </div>
+        <div id="naksPadaExtraInfo" style="margin-top:15px; font-style: italic; color: #366c46; text-align: left; padding: 0 10px;">
+          <!-- Add Nakshatra Pada info displayed when a pada is clicked -->
+        </div>
+      `;
+      document.getElementById("rasiInfoBox").innerHTML = infoHtml;
+    }
+
     drawChartGrid();
   </script>
 </body>
